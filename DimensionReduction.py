@@ -12,7 +12,7 @@ def get_normalize(data):
 
 
 # t-SNE
-def t_SNE(data, dim=2, perp=30, with_normalize=False):
+def t_SNE(data, dim=3, perp=30, with_normalize=False):
     if with_normalize:
         data = get_normalize(data)
 
