@@ -26,19 +26,21 @@ print(train_data.shape)
 reshaped_data = []
 reshaped_label = []
 
+DATA_SIZE = 1000
+
 # 降采样并拉平，计算相似度矩阵
 for i in range(len(train_data)):
     item = []
     for column in train_data[i].T:
         item.append([column[i] for i in range(len(column)) if i % 4 == 0])
 
-    reshaped_data.append(np.array(item).T.reshape(380,))
+    reshaped_data.append(np.array(item).T.reshape(DATA_SIZE,))
     reshaped_label.append(train_event[i])
     if train_event[i] == 1:
-        reshaped_data.append(np.array(item).T.reshape(380, ))
-        reshaped_data.append(np.array(item).T.reshape(380, ))
-        reshaped_data.append(np.array(item).T.reshape(380, ))
-        reshaped_data.append(np.array(item).T.reshape(380, ))
+        reshaped_data.append(np.array(item).T.reshape(DATA_SIZE, ))
+        reshaped_data.append(np.array(item).T.reshape(DATA_SIZE, ))
+        reshaped_data.append(np.array(item).T.reshape(DATA_SIZE, ))
+        reshaped_data.append(np.array(item).T.reshape(DATA_SIZE, ))
         reshaped_label.append(train_event[i])
         reshaped_label.append(train_event[i])
         reshaped_label.append(train_event[i])
@@ -55,14 +57,11 @@ reshaped_label = reshaped_label[index]
 
 # cosine_distance = cosine_matrix(np.array(reshaped_data))
 
-print(reshaped_data.shape)
-"""
-
 # dimension reduction
 # t-SNE
-# dim_data, ratio, result = get_pca(reshaped_data, c=2, with_normalize=True)
-# print(ratio)
-dim_data = t_SNE(reshaped_data, perp=5, with_normalize=True)
+dim_data, ratio, result = get_pca(reshaped_data, c=20, with_normalize=False)
+print(sum(ratio))
+# dim_data = t_SNE(reshaped_data, perp=5, with_normalize=False)
 # get two coordinates
 x = [i[0] for i in dim_data]
 y = [i[1] for i in dim_data]
@@ -71,6 +70,10 @@ z = [i[2] for i in dim_data]
 default_colors = ['r', 'b']
 colors = get_color(train_event, default_colors)
 draw_scatter3d(x, y, z, train_event, colors)
+print(reshaped_data.shape)
+
+"""
+
 
 
 # PCA
@@ -101,6 +104,8 @@ params = {
     'decision_function_shape': 'ovo',
     'class_weight': 'balanced'
 }
+
+# reshaped_data = dim_data
 
 loo = LeaveOneOut()
 correct = 0
