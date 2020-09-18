@@ -1,5 +1,5 @@
 import numpy as np
-from sklearn.manifold import TSNE
+from sklearn.manifold import TSNE, Isomap
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, Normalizer, MaxAbsScaler
 
@@ -21,6 +21,10 @@ def t_SNE(data, dim=3, perp=30, with_normalize=False):
     tsne.fit_transform(data)
 
     return tsne.embedding_
+
+
+def Isometric(data, n_neighbors=5, n_components=2):
+    return Isomap(n_neighbors=n_neighbors, n_components=n_components).fit_transform(data)
 
 
 # PCA

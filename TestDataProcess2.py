@@ -1,7 +1,7 @@
 import numpy as np
 import joblib
 from DimensionReduction import get_normalize
-from Filter import cb_filter
+from Filter import custom_filter, iir_notch_filter, cb_filter
 
 # 针对 event 中的每条标签 从数据中提取出持续时间 800ms 的单次试验数据段
 # 即单次试验从刺激开始算起, 刺激开始后的 800ms 结束
@@ -42,24 +42,33 @@ for i in range(5):
     test_event = test_event_by_S[i]
 
     char_len = test_data.shape[0]
-    print(char_len)
 
     event_data_s = []
 
     for j in range(9):
         char_name = char_names[j]
         event = test_event[j]
-        for k in range(len(event)):
-            # 剔除实验开始结束时的标记 event
-            if k % 13 != 0:
-                # 开始和结束时间在数据表中的索引
-                event_start = event[k][1] - 1
-                event_end = event_start + 200
-                # 获取对应时间段的采样数据
-                event_data = get_normalize(np.array(cb_filter(test_data[j])[event_start:event_end]))
-                event_data_s.append(event_data)
+        event_data = np.zeros((100, 20))
+
+        for k in range(1, 13):
+            event_data = np.zeros((100, 20))
+
+            for idx in range(1, len(event)):  # 0 - 66
+                # 剔除实验开始结束时的标记 event 求五个轮次中同一行列的均值
+                if event[idx][0] == k:
+                    # 开始和结束时间在数据表中的索引
+                    event_start = event[idx][1] - 1 + 50
+                    event_end = event_start + 100
+                    # 获取对应时间段的采样数据
+                    event_data = event_data + np.array(test_data[j][event_start:event_end])
+
+            event_data = event_data / 5
+            print(event_data.shape)
+
+            event_data_s.append(event_data)
 
     test_event_data_by_S.append(event_data_s)
 
 joblib.dump(test_event_data_by_S, 'data/test_event_data_by_S.pkl')
 
+print(len(test_event_data_by_S[0]))

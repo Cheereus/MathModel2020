@@ -1,11 +1,12 @@
 import numpy as np
 import joblib
 from DimensionReduction import t_SNE, get_pca, get_normalize
-from Utils import get_color, draw_scatter
+from Utils import get_color, draw_scatter, draw_scatter3d
 from Clustering import k_means, knn
 from sklearn.model_selection import cross_val_score, LeaveOneOut
 from SupportVectorMachine import svm_cross_validation
 from sklearn import svm
+from Distance import cosine_matrix
 
 char_names = ['B', 'D', 'G', 'L', 'O', 'Q', 'S', 'V', 'Z', '4', '7', '9']
 
@@ -21,29 +22,35 @@ char_labels = np.array(char_labels)
 train_data = np.array(joblib.load('data/event_data_by_S.pkl')[0])
 train_event = np.array(joblib.load('data/event_labels_by_S.pkl')[0])
 
-# reshaped_data = []
 
-# for i in range(len(train_data)):
-#     reshaped_data.append(train_data[i].reshape(4000,))
+reshaped_data = []
 
-reshaped_data = np.array(train_data)
+# 降采样并拉平，计算相似度矩阵
+for i in range(len(train_data)):
+    item = []
+    for column in train_data[i].T:
+        item.append([column[i] for i in range(len(column)) if i % 8 == 0])
+    reshaped_data.append(np.array(item).T.reshape(500,))
+
+reshaped_data = cosine_matrix(np.array(reshaped_data))
+
 print(reshaped_data.shape)
-
 """
-
 
 # dimension reduction
 # t-SNE
-#dim_data, ratio, result = get_pca(reshaped_data, c=2, with_normalize=True)
+# dim_data, ratio, result = get_pca(reshaped_data, c=2, with_normalize=True)
 # print(ratio)
-dim_data = t_SNE(train_data, perp=5, with_normalize=True)
+dim_data = t_SNE(reshaped_data, perp=5, with_normalize=True)
 # get two coordinates
 x = [i[0] for i in dim_data]
 y = [i[1] for i in dim_data]
+z = [i[2] for i in dim_data]
 # get color list based on labels
 default_colors = ['r', 'b']
 colors = get_color(train_event, default_colors)
-draw_scatter(x, y, train_event, colors)
+draw_scatter3d(x, y, z, train_event, colors)
+
 
 # PCA
 # dim_data, ratio, result = get_pca(reshaped_data, c=2, with_normalize=True)
@@ -84,7 +91,7 @@ params = {
 
 print(svm_cross_validation(reshaped_data, train_event, s=10, params=params))
 
-model = svm.SVC(C=1, gamma=0.001, degree=3, kernel='rbf')
+model = svm.SVC(C=1, gamma=0.001, degree=3, kernel='linear')
 model.fit(reshaped_data, train_event)
 
 joblib.dump(model, 'model/svm.pkl')

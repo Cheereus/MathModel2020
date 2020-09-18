@@ -3,6 +3,18 @@ import joblib
 import scipy.signal as signal
 
 
+def cb_filter(data):
+
+    fs = 250.0  # Sample frequency (Hz)
+    f0 = 50.0  # Frequency to be removed from signal (Hz)
+    Q = 30.0  # Quality factor
+    w0 = f0/(fs/2)  # Normalized Frequency
+    # Design notch filter
+    b, a = signal.cheby1(8, 1, 0.08, btype='low')
+
+    return np.array(signal.filtfilt(b, a, np.array(data).T)).T
+
+
 def custom_filter(data):
     row_data = np.array(data)
     new_row_data = []

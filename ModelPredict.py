@@ -8,11 +8,11 @@ test_data = np.array(joblib.load('data/test_event_data_by_S.pkl')[0])
 reshaped_data = []
 
 for i in range(len(test_data)):
-    reshaped_data.append(test_data[i].reshape(4000,))
+    reshaped_data.append(test_data[i].reshape(2000,))
 
 reshaped_data = np.array(reshaped_data)
 model = joblib.load('model/svm.pkl')
 
 predict_labels = model.predict(reshaped_data)
 
-print(np.where(predict_labels == 1))
+print(predict_labels)

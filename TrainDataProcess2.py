@@ -1,7 +1,7 @@
 import numpy as np
 import joblib
 from DimensionReduction import get_normalize
-from Filter import custom_filter, cb_filter
+from Filter import custom_filter, iir_notch_filter, cb_filter
 from Utils import get_color, draw_scatter
 
 # 针对 event 中的每条标签 从数据中提取出持续时间 800ms 的单次试验数据段
@@ -49,19 +49,28 @@ for i in range(5):
     for j in range(12):
         char_name = char_names[j]
         event = train_event[j]
-        for k in range(len(event)):
-            # 剔除实验开始结束时的标记 event
-            if k % 13 != 0:
-                # 标注
-                event_label = get_true_label(char_name, event[k][0])
-                event_labels.append(event_label)
-                # 开始和结束时间在数据表中的索引
-                event_start = event[k][1] - 1
-                event_end = event_start + 200
-                # 获取对应时间段的采样数据
-                event_data = get_normalize(np.array(cb_filter(train_data[j])[event_start:event_end]))
-                event_data_s.append(event_data)
-                print(event_data.shape)
+        event_data = np.zeros((100, 20))
+
+        for k in range(1, 13):
+            event_label = get_true_label(char_name, k)
+            event_labels.append(event_label)
+            event_data = np.zeros((100, 20))
+            print('k', k, 'label', event_label)
+
+            for idx in range(1, len(event)):  # 0 - 66
+                # 剔除实验开始结束时的标记 event 求五个轮次中同一行列的均值
+                if event[idx][0] == k:
+                    print(event[idx][0])
+                    # 开始和结束时间在数据表中的索引
+                    event_start = event[idx][1] - 1 + 50
+                    event_end = event_start + 100
+                    # 获取对应时间段的采样数据
+                    event_data = event_data + np.array(train_data[j])[event_start:event_end]
+
+            event_data = event_data / 5
+            print(event_data.shape)
+
+            event_data_s.append(event_data)
 
     event_data_by_S.append(event_data_s)
     event_labels_by_S.append(event_labels)
@@ -70,4 +79,4 @@ joblib.dump(event_data_by_S, 'data/event_data_by_S.pkl')
 joblib.dump(event_labels_by_S, 'data/event_labels_by_S.pkl')
 
 print(len(event_data_by_S[0]))
-print(len(event_labels_by_S[0]))
+print(event_labels_by_S[0])
