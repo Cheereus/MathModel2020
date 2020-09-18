@@ -60,7 +60,7 @@ for i in range(5):
                     event_start = event[idx][1] - 1 + 50
                     event_end = event_start + 100
                     # 获取对应时间段的采样数据
-                    event_data = event_data + np.array(test_data[j][event_start:event_end])
+                    event_data = event_data + get_normalize(np.array(cb_filter(test_data[j])[event_start:event_end]))
 
             event_data = event_data / 5
             print(event_data.shape)

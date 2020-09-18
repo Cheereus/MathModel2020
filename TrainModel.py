@@ -21,18 +21,32 @@ char_labels = np.array(char_labels)
 # 获取一位受试者的训练数据
 train_data = np.array(joblib.load('data/event_data_by_S.pkl')[0])
 train_event = np.array(joblib.load('data/event_labels_by_S.pkl')[0])
-
+print(train_data.shape)
 
 reshaped_data = []
+reshaped_label = []
 
 # 降采样并拉平，计算相似度矩阵
 for i in range(len(train_data)):
     item = []
     for column in train_data[i].T:
-        item.append([column[i] for i in range(len(column)) if i % 8 == 0])
-    reshaped_data.append(np.array(item).T.reshape(500,))
+        item.append([column[i] for i in range(len(column)) if i % 4 == 0])
 
-reshaped_data = cosine_matrix(np.array(reshaped_data))
+    reshaped_data.append(np.array(item).T.reshape(500,))
+    reshaped_label.append(train_event[i])
+    if train_event[i] == 1:
+        reshaped_data.append(np.array(item).T.reshape(500, ))
+        reshaped_data.append(np.array(item).T.reshape(500, ))
+        reshaped_data.append(np.array(item).T.reshape(500, ))
+        reshaped_data.append(np.array(item).T.reshape(500, ))
+        reshaped_label.append(train_event[i])
+        reshaped_label.append(train_event[i])
+        reshaped_label.append(train_event[i])
+        reshaped_label.append(train_event[i])
+
+reshaped_data = np.array(reshaped_data)
+reshaped_label = np.array(reshaped_label)
+cosine_distance = cosine_matrix(np.array(reshaped_data))
 
 print(reshaped_data.shape)
 """
@@ -61,14 +75,6 @@ draw_scatter3d(x, y, z, train_event, colors)
 loo = LeaveOneOut()
 correct = 0
 for train, test in loo.split(train_data):
-    model = knn(train_data[train], train_event[train], 3)
-    labels_predict = model.predict(train_data[test])
-    if labels_predict == train_event[test]:
-        correct += 1
-print(correct / len(train_data))
-loo = LeaveOneOut()
-correct = 0
-for train, test in loo.split(train_data):
     model = svm.SVC(C=1, gamma=0.001, degree=3, kernel='poly', decision_function_shape='ovo')
     model.fit(train_data[train], train_event[train])
     labels_predict = model.predict(train_data[test])
@@ -76,22 +82,34 @@ for train, test in loo.split(train_data):
         correct += 1
     print(correct, '/', test[0] + 1)
 print(correct / len(train_data))
+    model = knn(reshaped_data[train], reshaped_label[train], 5)
+    labels_predict = model.predict(reshaped_data[test])
 """
 
 params = {
     'C': 1,
     'gamma': 0.001,
     'degree': 3,
-    'kernel': 'rbf',
+    'kernel': 'linear',
     'decision_function_shape': 'ovo',
     'class_weight': 'balanced'
 }
 
-# normalized_data = get_normalize(train_data)
+loo = LeaveOneOut()
+correct = 0
+for train, test in loo.split(reshaped_data):
+    model = svm.SVC(C=1, gamma=0.001, degree=3, kernel='linear')
+    model.fit(reshaped_data[train], reshaped_label[train])
+    labels_predict = model.predict(reshaped_data[test])
+    if labels_predict == reshaped_label[test]:
+        correct += 1
+print(correct / len(reshaped_data))
 
-print(svm_cross_validation(reshaped_data, train_event, s=10, params=params))
+print(svm_cross_validation(reshaped_data, reshaped_label, s=10, params=params))
 
 model = svm.SVC(C=1, gamma=0.001, degree=3, kernel='linear')
-model.fit(reshaped_data, train_event)
-
+model.fit(reshaped_data, reshaped_label)
 joblib.dump(model, 'model/svm.pkl')
+
+model = knn(reshaped_data, reshaped_label, 5)
+joblib.dump(model, 'model/knn.pkl')

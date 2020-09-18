@@ -16,7 +16,7 @@ np.random.seed(816)
 device = tf.test.gpu_device_name()
 tf.keras.backend.clear_session()  # For easy reset of notebook state.
 
-input_layer = keras.Input(shape=(100, 20, 1), name='main_input')
+input_layer = keras.Input(shape=(25, 20, 1), name='main_input')
 x = layers.Conv2D(16, 8, padding='same', activation='relu')(input_layer)
 x = layers.Conv2D(32, 6, padding='same', activation='relu')(x)
 x = layers.Conv2D(8, 4, padding='same', activation='relu')(x)
@@ -40,13 +40,30 @@ train_data = np.array(joblib.load('data/event_data_by_S.pkl')[0])
 train_event = np.array(joblib.load('data/event_labels_by_S.pkl')[0])
 
 reshaped_data = []
+reshaped_label = []
 
+# 降采样并拉平，计算相似度矩阵
 for i in range(len(train_data)):
-    reshaped_data.append(train_data[i].reshape(2000,))
+    item = []
+    for column in train_data[i].T:
+        item.append([column[i] for i in range(len(column)) if i % 4 == 0])
+
+    reshaped_data.append(np.array(item).T)
+    reshaped_label.append(train_event[i])
+    if train_event[i] == 1:
+        reshaped_data.append(np.array(item).T)
+        reshaped_data.append(np.array(item).T)
+        reshaped_data.append(np.array(item).T)
+        reshaped_data.append(np.array(item).T)
+        reshaped_label.append(train_event[i])
+        reshaped_label.append(train_event[i])
+        reshaped_label.append(train_event[i])
+        reshaped_label.append(train_event[i])
 
 reshaped_data = np.array(reshaped_data)
+reshaped_label = np.array(reshaped_label)
 
-train_event = to_categorical(train_event)
+reshaped_label = to_categorical(reshaped_label)
 
 
 def train_net(model):
