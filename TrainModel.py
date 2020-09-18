@@ -32,13 +32,13 @@ for i in range(len(train_data)):
     for column in train_data[i].T:
         item.append([column[i] for i in range(len(column)) if i % 4 == 0])
 
-    reshaped_data.append(np.array(item).T.reshape(500,))
+    reshaped_data.append(np.array(item).T.reshape(380,))
     reshaped_label.append(train_event[i])
     if train_event[i] == 1:
-        reshaped_data.append(np.array(item).T.reshape(500, ))
-        reshaped_data.append(np.array(item).T.reshape(500, ))
-        reshaped_data.append(np.array(item).T.reshape(500, ))
-        reshaped_data.append(np.array(item).T.reshape(500, ))
+        reshaped_data.append(np.array(item).T.reshape(380, ))
+        reshaped_data.append(np.array(item).T.reshape(380, ))
+        reshaped_data.append(np.array(item).T.reshape(380, ))
+        reshaped_data.append(np.array(item).T.reshape(380, ))
         reshaped_label.append(train_event[i])
         reshaped_label.append(train_event[i])
         reshaped_label.append(train_event[i])
@@ -46,7 +46,14 @@ for i in range(len(train_data)):
 
 reshaped_data = np.array(reshaped_data)
 reshaped_label = np.array(reshaped_label)
-cosine_distance = cosine_matrix(np.array(reshaped_data))
+
+# 打乱数据
+index = [i for i in range(len(reshaped_data))]
+np.random.shuffle(index)
+reshaped_data = reshaped_data[index]
+reshaped_label = reshaped_label[index]
+
+# cosine_distance = cosine_matrix(np.array(reshaped_data))
 
 print(reshaped_data.shape)
 """

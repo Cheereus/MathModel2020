@@ -14,7 +14,7 @@ for i in range(len(test_data)):
     for column in test_data[i].T:
         item.append([column[i] for i in range(len(column)) if i % 4 == 0])
 
-    reshaped_data.append(np.array(item).T.reshape(500,))
+    reshaped_data.append(np.array(item).T.reshape(380,))
 
 reshaped_data = np.array(reshaped_data)
 cosine_distance = cosine_matrix(reshaped_data)
@@ -22,4 +22,4 @@ model = joblib.load('model/svm.pkl')
 
 predict_labels = model.predict(reshaped_data)
 
-print(predict_labels[12:24])
+print(predict_labels[48:60])

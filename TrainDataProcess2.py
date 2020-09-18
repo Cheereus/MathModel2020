@@ -49,28 +49,26 @@ for i in range(5):
     for j in range(12):
         char_name = char_names[j]
         event = train_event[j]
-        event_data = np.zeros((100, 20))
+        event_data = np.zeros((75, 20))
 
         for k in range(1, 13):
             event_label = get_true_label(char_name, k)
             event_labels.append(event_label)
-            event_data = np.zeros((100, 20))
-            print('k', k, 'label', event_label)
+            event_data = np.zeros((75, 20))
 
             for idx in range(1, len(event)):  # 0 - 66
                 # 剔除实验开始结束时的标记 event 求五个轮次中同一行列的均值
                 if event[idx][0] == k:
-                    print(event[idx][0])
                     # 开始和结束时间在数据表中的索引
                     event_start = event[idx][1] - 1 + 50
-                    event_end = event_start + 100
+                    event_end = event_start + 75
                     # 获取对应时间段的采样数据
                     event_data = event_data + get_normalize(np.array(cb_filter(train_data[j])[event_start:event_end]))
 
             event_data = event_data / 5
-            print(event_data.shape)
 
             event_data_s.append(event_data)
+            print(len(event_data_s))
 
     event_data_by_S.append(event_data_s)
     event_labels_by_S.append(event_labels)
