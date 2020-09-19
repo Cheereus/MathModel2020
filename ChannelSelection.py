@@ -78,7 +78,9 @@ def get_test_data(idx, channel):
 
 
 def calc_loss(predict_vec):
-    loss = 0
+    tp = 0
+    fp = 0
+    fn = 0
 
     # M, F, 5, 2, I 对应的向量
     characters = [
@@ -90,24 +92,45 @@ def calc_loss(predict_vec):
     ]
     for col in range(5):
         for row in range(12):
-            if characters[col][row] != predict_vec[col][row]:
-                # loss += 1
-                X = np.vstack([characters[col], predict_vec[col]])
-                d2 = np.corrcoef(X)[0][1]
-                loss += d2
-        # loss += cos_sim(characters[col], predict_vec[col])
+            if characters[col][row] == 1 and predict_vec[col][row] == 1:
+                tp += 1
+            if characters[col][row] == 0 and predict_vec[col][row] == 1:
+                fp += 1
+            if characters[col][row] == 1 and predict_vec[col][row] == 0:
+                fn += 1
 
-    return loss
+    # score = tp / (tp + fp + fn)
+    score = tp / (tp + fp + fn)
+
+    return score
 
 
-channel_now = [_ for _ in range(20)]
-# del channel_now[18]
+# 通道编号 从 0 开始
+channel_left = [1, 2, 4, 6, 7, 8, 9, 10, 11, 18, 19]
+channel_8 = [0, 3, 12, 13, 14, 15, 16, 17, 5]
 
-for c in channel_now:
-    selected_channel = [_ for _ in range(20)]
-    del selected_channel[c]
-    train_data_by_S, train_label_by_S = get_train_data(0, selected_channel)
-    test_data_by_S = get_test_data(0, selected_channel)
+# 受试者编号 从 0 开始
+S_index = 0
+
+train_data_by_S, train_label_by_S = get_train_data(S_index, channel_8)
+test_data_by_S = get_test_data(S_index, channel_8)
+model = svm.SVC(C=1, gamma=0.001, degree=3, kernel='linear')
+model.fit(train_data_by_S, train_label_by_S)
+predict_labels = model.predict(test_data_by_S)
+
+labels_5 = []
+
+# 只考虑前五个字符
+for char_idx in range(5):
+    labels_5.append(predict_labels[char_idx * 12:(char_idx + 1) * 12])
+
+current_loss = calc_loss(labels_5)
+print('Channel 9 score:', current_loss)
+
+for c in range(11):
+    selected_channel = channel_8 + [channel_left[c]]
+    train_data_by_S, train_label_by_S = get_train_data(S_index, selected_channel)
+    test_data_by_S = get_test_data(S_index, selected_channel)
     model = svm.SVC(C=1, gamma=0.001, degree=3, kernel='linear')
     model.fit(train_data_by_S, train_label_by_S)
     predict_labels = model.predict(test_data_by_S)
@@ -119,4 +142,4 @@ for c in channel_now:
         labels_5.append(predict_labels[char_idx * 12:(char_idx + 1) * 12])
 
     current_loss = calc_loss(labels_5)
-    print('Remove channel:', c+1, 'loss:', current_loss)
+    print('Add channel:', channel_left[c], 'score:', current_loss)
