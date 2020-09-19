@@ -18,6 +18,7 @@ for i in range(12):
 
 char_labels = np.array(char_labels)
 
+
 # 获取一位受试者的训练数据
 train_data = np.array(joblib.load('data/event_data_by_S.pkl')[0])
 train_event = np.array(joblib.load('data/event_labels_by_S.pkl')[0])
@@ -26,21 +27,25 @@ print(train_data.shape)
 reshaped_data = []
 reshaped_label = []
 
-DATA_SIZE = 1000
+DATA_SIZE = 800
 
 # 降采样并拉平，计算相似度矩阵
 for i in range(len(train_data)):
-    item = []
+    item0, item1, item2, item3, item4 = [], [], [], [], []
     for column in train_data[i].T:
-        item.append([column[i] for i in range(len(column)) if i % 4 == 0])
-
-    reshaped_data.append(np.array(item).T.reshape(DATA_SIZE,))
+        item0.append([column[i] for i in range(len(column)) if i % 5 == 0])
+        item1.append([column[i] for i in range(len(column)) if i % 5 == 1])
+        item2.append([column[i] for i in range(len(column)) if i % 5 == 2])
+        item3.append([column[i] for i in range(len(column)) if i % 5 == 3])
+        item4.append([column[i] for i in range(len(column)) if i % 5 == 4])
+    reshaped_data.append(np.array(item0).T.reshape(DATA_SIZE,))
     reshaped_label.append(train_event[i])
+
     if train_event[i] == 1:
-        reshaped_data.append(np.array(item).T.reshape(DATA_SIZE, ))
-        reshaped_data.append(np.array(item).T.reshape(DATA_SIZE, ))
-        reshaped_data.append(np.array(item).T.reshape(DATA_SIZE, ))
-        reshaped_data.append(np.array(item).T.reshape(DATA_SIZE, ))
+        reshaped_data.append(np.array(item1).T.reshape(DATA_SIZE, ))
+        reshaped_data.append(np.array(item2).T.reshape(DATA_SIZE, ))
+        reshaped_data.append(np.array(item3).T.reshape(DATA_SIZE, ))
+        reshaped_data.append(np.array(item4).T.reshape(DATA_SIZE, ))
         reshaped_label.append(train_event[i])
         reshaped_label.append(train_event[i])
         reshaped_label.append(train_event[i])
@@ -57,6 +62,9 @@ reshaped_label = reshaped_label[index]
 
 # cosine_distance = cosine_matrix(np.array(reshaped_data))
 
+
+"""
+
 # dimension reduction
 # t-SNE
 dim_data, ratio, result = get_pca(reshaped_data, c=20, with_normalize=False)
@@ -71,9 +79,6 @@ default_colors = ['r', 'b']
 colors = get_color(train_event, default_colors)
 draw_scatter3d(x, y, z, train_event, colors)
 print(reshaped_data.shape)
-
-"""
-
 
 
 # PCA
@@ -121,7 +126,7 @@ print(svm_cross_validation(reshaped_data, reshaped_label, s=10, params=params))
 
 model = svm.SVC(C=1, gamma=0.001, degree=3, kernel='linear')
 model.fit(reshaped_data, reshaped_label)
-joblib.dump(model, 'model/svm.pkl')
+joblib.dump(model, 'model/svm4.pkl')
 
 model = knn(reshaped_data, reshaped_label, 5)
 joblib.dump(model, 'model/knn.pkl')

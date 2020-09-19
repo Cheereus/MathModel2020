@@ -37,6 +37,8 @@ def get_true_label(name, label):
 
 test_event_data_by_S = []
 
+data_length = [10, 9, 9, 10, 10]
+
 for i in range(5):
     test_data = test_data_by_S[i]
     test_event = test_event_by_S[i]
@@ -45,24 +47,26 @@ for i in range(5):
 
     event_data_s = []
 
-    for j in range(9):
+    for j in range(data_length[i]):
         char_name = char_names[j]
         event = test_event[j]
         event_data = np.zeros((200, 20))
 
         for k in range(1, 13):
             event_data = np.zeros((200, 20))
+            # 使用多少轮次的测试数据
+            test_round = 5
 
             for idx in range(1, len(event)):  # 0 - 66
-                # 剔除实验开始结束时的标记 event 求五个轮次中同一行列的均值
-                if event[idx][0] == k:
+                # 剔除实验开始结束时的标记 event 求轮次中同一行列的均值
+                if event[idx][0] == k and idx <= test_round * 13:
                     # 开始和结束时间在数据表中的索引
                     event_start = event[idx][1] - 1
                     event_end = event_start + 200
                     # 获取对应时间段的采样数据
                     event_data = event_data + get_normalize(np.array(cb_filter(test_data[j])[event_start:event_end]))
 
-            event_data = event_data / 5
+            event_data = event_data / test_round
 
             event_data_s.append(event_data)
             print(len(event_data_s))

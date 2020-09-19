@@ -1,4 +1,4 @@
-from scipy.spatial.distance import pdist
+from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 
 
