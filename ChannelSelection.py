@@ -106,14 +106,15 @@ def calc_loss(predict_vec):
 
 
 # 通道编号 从 0 开始
-channel_left = [1, 2, 4, 6, 7, 8, 9, 10, 11, 18, 19]
-channel_8 = [0, 3, 12, 13, 14, 15, 16, 17, 5]
-
+# channel_left = [1, 2, 4, 6, 7, 8, 9, 10, 11, 18, 19]
+# channel_8 = [0, 3, 12, 13, 14, 15, 16, 17, 5]
+# channel_left = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+channel_left = [2, 4, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
 # 受试者编号 从 0 开始
 S_index = 0
 
-train_data_by_S, train_label_by_S = get_train_data(S_index, channel_8)
-test_data_by_S = get_test_data(S_index, channel_8)
+train_data_by_S, train_label_by_S = get_train_data(S_index, channel_left)
+test_data_by_S = get_test_data(S_index, channel_left)
 model = svm.SVC(C=1, gamma=0.001, degree=3, kernel='linear')
 model.fit(train_data_by_S, train_label_by_S)
 predict_labels = model.predict(test_data_by_S)
@@ -125,10 +126,13 @@ for char_idx in range(5):
     labels_5.append(predict_labels[char_idx * 12:(char_idx + 1) * 12])
 
 current_loss = calc_loss(labels_5)
-print('Channel 9 score:', current_loss)
+print('Channel', len(channel_left), 'score:', current_loss)
 
-for c in range(11):
-    selected_channel = channel_8 + [channel_left[c]]
+
+for c in range(len(channel_left)):
+    #  selected_channel = channel_8 + [channel_left[c]]
+    selected_channel = [_ for _ in channel_left]
+    del selected_channel[c]
     train_data_by_S, train_label_by_S = get_train_data(S_index, selected_channel)
     test_data_by_S = get_test_data(S_index, selected_channel)
     model = svm.SVC(C=1, gamma=0.001, degree=3, kernel='linear')
@@ -142,4 +146,4 @@ for c in range(11):
         labels_5.append(predict_labels[char_idx * 12:(char_idx + 1) * 12])
 
     current_loss = calc_loss(labels_5)
-    print('Add channel:', channel_left[c], 'score:', current_loss)
+    print('Remove channel:', channel_left[c] + 1, 'score:', current_loss)
