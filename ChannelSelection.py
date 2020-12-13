@@ -1,7 +1,6 @@
 import numpy as np
 import joblib
 from sklearn import svm
-from scipy.spatial.distance import pdist
 
 
 def cos_sim(vector_a, vector_b):

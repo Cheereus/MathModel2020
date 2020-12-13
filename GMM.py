@@ -1,15 +1,10 @@
-from sklearn.mixture import GaussianMixture
 import xlrd
 import numpy as np
-import joblib
-from Utils import get_color, draw_scatter, draw_scatter3d
-from DimensionReduction import t_SNE, get_pca, get_normalize, Isometric
+from DimensionReduction import get_normalize
 from Clustering import knn
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.model_selection import cross_val_score, train_test_split
-from Metrics import accuracy, F1
-import seaborn as sns
-from sklearn.metrics import confusion_matrix
+from sklearn.model_selection import train_test_split
+from Metrics import accuracy
 import matplotlib.pyplot as plt
 
 

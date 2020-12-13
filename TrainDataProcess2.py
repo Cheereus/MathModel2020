@@ -1,8 +1,7 @@
 import numpy as np
 import joblib
 from DimensionReduction import get_normalize
-from Filter import custom_filter, iir_notch_filter, cb_filter
-from Utils import get_color, draw_scatter
+from Filter import cb_filter
 
 # 针对 event 中的每条标签 从数据中提取出持续时间 800ms 的单次试验数据段
 # 即单次试验从刺激开始算起, 刺激开始后的 800ms 结束

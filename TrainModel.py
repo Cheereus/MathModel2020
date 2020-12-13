@@ -1,12 +1,9 @@
 import numpy as np
 import joblib
-from DimensionReduction import t_SNE, get_pca, get_normalize
-from Utils import get_color, draw_scatter, draw_scatter3d
-from Clustering import k_means, knn
-from sklearn.model_selection import cross_val_score, LeaveOneOut
+from Clustering import knn
+from sklearn.model_selection import LeaveOneOut
 from SupportVectorMachine import svm_cross_validation
 from sklearn import svm
-from Distance import cosine_matrix
 
 char_names = ['B', 'D', 'G', 'L', 'O', 'Q', 'S', 'V', 'Z', '4', '7', '9']
 

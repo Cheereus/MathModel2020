@@ -1,16 +1,11 @@
 import xlrd
 import numpy as np
-import joblib
-from Utils import get_color, draw_scatter, draw_scatter3d
-from DimensionReduction import t_SNE, get_pca, get_normalize, Isometric
-from Clustering import knn
+from Utils import get_color, draw_scatter
+from DimensionReduction import get_pca
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.model_selection import cross_val_score, train_test_split
-from Metrics import accuracy, F1, ARI
-import seaborn as sns
-from sklearn.metrics import confusion_matrix
+from sklearn.model_selection import train_test_split
+from Metrics import accuracy, ARI
 import matplotlib.pyplot as plt
-from sklearn.manifold import locally_linear_embedding, MDS
 
 
 def read_from_xlsx(filePath):
@@ -71,7 +66,7 @@ draw_scatter(x, y, sleep_labels, colors)
 """
 """
 default_colors = [[0, 0.8, 1], [0, 0.5, 0.5], [0.2, 0.8, 0.8], [0.2, 0.4, 1], [0.6, 0.8, 1], [1, 0.6, 0.8],
-                  [0.8, 0.6, 1], [1, 0.8, 0.6], [1, 0, 0],[0, 1, 0]]
+                  [0.8, 0.6, 1], [1, 0.8, 0.6], [1, 0, 0], [0, 1, 0]]
 
 for j in range(1, 10):
 
