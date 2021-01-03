@@ -66,8 +66,8 @@ for i in range(5):
     event_data_by_S.append(event_data_s)
     event_labels_by_S.append(event_labels)
 
-joblib.dump(event_data_by_S, 'data/event_data_by_S.pkl')
-joblib.dump(event_labels_by_S, 'data/event_labels_by_S.pkl')
+joblib.dump(event_data_by_S, 'data/event_data_by_S_single.pkl')
+joblib.dump(event_labels_by_S, 'data/event_labels_by_S_single.pkl')
 
 print(len(event_data_by_S[0]))
 print(len(event_labels_by_S[0]))

@@ -34,47 +34,28 @@ def read_data_by_sheets(filePath):
 
 sleep_data, sleep_labels = read_data_by_sheets('data/sleep.xlsx')
 
-# 归一化
-# sleep_data = get_normalize(sleep_data)
-
-# 降维 PCA 和 t-SNE
 # PCA
 dim_data, ratio, result = get_pca(sleep_data, c=2, with_normalize=False)
 # print(ratio)
-# t-SNE
-# dim_data = t_SNE(sleep_data, perp=50, with_normalize=False)
-# Iso map
-# dim_data = Isometric(sleep_data, n_neighbors=30, n_components=3)
-# LLE
-# dim_data = locally_linear_embedding(sleep_data, n_neighbors=10, n_components=2)[0]
-# MDS
-# dim_data = MDS(n_components=2).fit_transform(sleep_data)
-# print(dim_data)
 
-# 绘图
-# get coordinates
+# 绘图13
 x = [i[0] for i in dim_data]
 y = [i[1] for i in dim_data]
-# z = [i[2] for i in dim_data]
-# get color list based on labels
 default_colors = ['r', 'b', 'g', 'c', 'm']
 colors = get_color(sleep_labels, default_colors)
-
 print('Drawing...')
-# draw_scatter(x, y, sleep_labels, colors)
 draw_scatter(x, y, sleep_labels, colors)
-"""
-"""
+
 default_colors = [[0, 0.8, 1], [0, 0.5, 0.5], [0.2, 0.8, 0.8], [0.2, 0.4, 1], [0.6, 0.8, 1], [1, 0.6, 0.8],
                   [0.8, 0.6, 1], [1, 0.8, 0.6], [1, 0, 0], [0, 1, 0]]
-
 for j in range(1, 10):
+
+    acc_arr = []
 
     # 数据集切分
     train_data, test_data, train_label, test_label = train_test_split(sleep_data, sleep_labels, test_size=(j / 10), shuffle=True)
-    # knn 模型
-    acc_arr = []
 
+    # knn 模型遍历训练
     for i in range(1, 51):
         knn_model = KNeighborsClassifier(n_neighbors=i)
         knn_model.fit(train_data, train_label)
@@ -87,6 +68,7 @@ for j in range(1, 10):
     x = range(1, 51)
     plt.plot(x, acc_arr, '*-', color=default_colors[j - 1], label='test percent:'+str(j / 10))
 
+# 图14
 my_x_ticks = [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
 plt.xticks(my_x_ticks)
 plt.legend(loc='best')
@@ -94,19 +76,3 @@ plt.grid(axis='x', linestyle='--')
 plt.xlabel('k')
 plt.ylabel('accuracy')
 plt.show()
-# 交叉验证
-# scores = cross_val_score(knn_model, dim_data, sleep_labels, cv=10)
-# print(scores)
-
-"""
-C2 = confusion_matrix(test_label, predict_label)
-sns.heatmap(C2, annot=True, cmap='YlGnBu', fmt='.20g')
-labels_name = [6, 5, 4, 3, 2]
-num_local = np.array(range(len(labels_name) + 1))
-plt.xticks(num_local, labels_name, rotation=90)    # 将标签印在x轴坐标上
-plt.yticks(num_local, labels_name)    # 将标签印在y轴坐标上
-plt.ylabel('True label')
-plt.xlabel('Predicted label')
-plt.imshow(C2, interpolation='nearest')
-plt.show()
-"""
