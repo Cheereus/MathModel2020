@@ -31,7 +31,7 @@ colors = get_color(range(8))
 x = range(0, 800, 4)
 
 plt.plot(x, non_p300_wave_avg, c='r', label='non p300')
-plt.plot(x, p300_wave_avg, c='b', label='p300')
+plt.plot(x, p300_wave_avg, c='k', label='p300')
 plt.xlabel('time(ms)')
 my_x_ticks = np.arange(0, 200, 50)
 plt.grid()
