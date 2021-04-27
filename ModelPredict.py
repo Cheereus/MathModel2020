@@ -19,8 +19,8 @@ for i in range(len(test_data)):
     reshaped_data.append(np.array(item).T.reshape(DATA_SIZE,))
 
 reshaped_data = np.array(reshaped_data)
-cosine_distance = cosine_matrix(reshaped_data)
-model = joblib.load('model/svm0.pkl')
+# cosine_distance = cosine_matrix(reshaped_data)
+model = joblib.load('model/svm4.pkl')
 
 predict_labels = model.predict(reshaped_data)
 print(len(predict_labels))

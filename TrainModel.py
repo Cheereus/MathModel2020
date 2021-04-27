@@ -19,7 +19,6 @@ char_labels = np.array(char_labels)
 # 获取一位受试者的训练数据
 train_data = np.array(joblib.load('data/event_data_by_S.pkl')[0])
 train_event = np.array(joblib.load('data/event_labels_by_S.pkl')[0])
-print(train_data.shape)
 
 reshaped_data = []
 reshaped_label = []
@@ -56,6 +55,7 @@ index = [i for i in range(len(reshaped_data))]
 np.random.shuffle(index)
 reshaped_data = reshaped_data[index]
 reshaped_label = reshaped_label[index]
+print(reshaped_data.shape)
 
 # cosine_distance = cosine_matrix(np.array(reshaped_data))
 
